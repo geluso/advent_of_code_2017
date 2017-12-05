@@ -523,6 +523,8 @@ function goodPass(pass) {
     console.log("SHORT:", pass);
   }
 
+  words = words.map((w) => w.split("").sort().join(""));
+
   words.sort();
   var goodPass = words.reduce((a,b) => {
     console.log(a, b)
