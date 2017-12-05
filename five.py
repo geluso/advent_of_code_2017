@@ -1009,7 +1009,7 @@ class Jumper:
     def __init__(self, code):
         self.pc = 0
         self.code = code
-        self.ticks = 1
+        self.ticks = 0
 
     def run(self):
         #print(self.ticks, self.pc, self.code) 
@@ -1019,6 +1019,7 @@ class Jumper:
         print(self.ticks, self.pc, self.code) 
 
     def tick(self):
+        self.ticks += 1
         val = self.code[self.pc]
         if val >= 3:
             self.code[self.pc] -= 1
@@ -1027,7 +1028,6 @@ class Jumper:
         self.pc += val
         if self.pc < 0 or self.pc >= len(self.code):
             return False
-        self.ticks += 1
         return True
 
 j1 = Jumper(l2)
