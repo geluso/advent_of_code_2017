@@ -6,21 +6,21 @@ public class MemoryBank {
     int cycles = 0;
 
     List<Integer> buckets;
-    Set<String> seenStates;
+    Map<String, Integer> seenStates;
 
     // 0, 2, 7, and 0
     public MemoryBank() {
         this.buckets = new ArrayList<>();
-        this.seenStates = new HashSet<>();
+        this.seenStates = new HashMap<>();
     }
 
     public MemoryBank(Integer[] banks) {
         this();
         this.buckets.addAll(Arrays.asList(banks));
-        this.seenStates.add(this.toString());
+        this.seenStates.put(this.toString(), this.cycles);
     }
 
-    public boolean cycle() {
+    public int cycle() {
         this.cycles++;
         int index = indexWithMost();
         int amount = buckets.get(index);
@@ -34,13 +34,16 @@ public class MemoryBank {
 
         String repr = buckets.toString();
         System.out.println("cycle: " + this.cycles + " state: " + repr);
-        if (seenStates.contains(repr)) {
+
+        if (seenStates.containsKey(repr)) {
            // did not complete in a unique state
-           return false;
+           int diff = this.cycles - seenStates.get(repr);
+           System.out.println(diff);
+           return diff;
         }
 
-        seenStates.add(repr);
-        return true;
+        seenStates.put(repr, this.cycles);
+        return 0;
     }
 
     public int indexWithMost() {
