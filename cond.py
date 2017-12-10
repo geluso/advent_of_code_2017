@@ -1007,12 +1007,11 @@ buw inc 559 if okl <= 1919"""
 from collections import defaultdict
 
 regs = defaultdict(int)
+regs["SECRETMAX"] = 0
 
 def run(lines):
     lines = lines.split("\n")
     for line in lines:
-        #print(line)
-        #print(regs)
         execute(line)
 
 def execute(line):
@@ -1026,6 +1025,8 @@ def execute(line):
         elif op == "dec":
             #print(op, dest, val)
             regs[dest] -= val
+        if regs[dest] > regs["SECRETMAX"]:
+            regs["SECRETMAX"] = regs[dest]
 
 def dotest(src, test, test_val):
     if test == ">" and regs[src] > test_val:
@@ -1058,5 +1059,4 @@ def big_reg():
 run(p2)
 big_reg()
 
-
-
+print(regs["SECRETMAX"])
