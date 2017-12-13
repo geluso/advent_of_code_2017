@@ -1,4 +1,5 @@
 from inn import inn
+from copy import deepcopy
 
 class Layer:
     def __init__(self, depth, range_):
@@ -39,15 +40,69 @@ class Firewall:
                 self.layers[depth] = Layer(depth, -1)
             layer = self.layers[depth]
             hit = ""
-            if depth == step and layer.index == 0:
-                hit = "HIT"
-                damage = depth * layer.range
+            if depth == step:
+                if layer.index == 0:
+                    damage = depth * layer.range
+                    hit = "HIT------------- " + str(damage)
+                else:
+                    hit = "MISS"
+                #print("TICK:", depth, str(layer.index) + "/" + str(layer.range), hit)
             layer.tick()
         return damage
 
-damage = 0
-data = inn("input")
-firewall = Firewall(data)
-for i in range(firewall.max + 1):
-    damage += firewall.tick(i)
-print("DAMAGE:", damage)
+def slow_search(first_firewall):
+    delay = 0
+    least_damage = None
+    furthest = None
+
+    firewall = first_firewall
+    last_firewall = None
+
+    while True:
+        damage = 0
+        
+        if last_firewall is not None:
+            firewall = last_firewall
+        firewall.tick(None)
+        #firewall.tick(None)
+        delay += 1
+        last_firewall = deepcopy(firewall)
+
+        for i in range(firewall.max + 1):
+            damage += firewall.tick(i)
+            if damage > 0:
+                break
+        if furthest is None or i > furthest:
+            furthest = i
+            print("DELAY:", delay, "FURTHEST:", furthest)
+
+        if (least_damage is None or damage < least_damage) and damage != 2:
+            least_damage = damage
+            print("DELAY:", delay, "LEAST:", least_damage)
+        if damage == 0:
+            break
+        #input("pause")
+
+def fast_search(firewall):
+    delay = 0
+    while True:
+        taken_damage = False
+        for depth in range(firewall.max + 1):
+            picoseconds = delay + depth
+            collission = "MISS"
+            layer = None
+            if depth in firewall.layers:
+                layer = firewall.layers[depth]
+                period = (layer.range - 1) * 2
+                if picoseconds % period == 0:
+                    taken_damage = True
+                    break
+        if not taken_damage:
+            print("DELAY:", delay)
+            break
+        delay += 2
+
+if __name__ == "__main__":
+    data = inn("input")
+    firewall = Firewall(data)
+    fast_search(firewall)
